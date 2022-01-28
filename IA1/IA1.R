@@ -3,17 +3,18 @@
 #install.package("dplyr")
 #install.packages("tidyverse")
 #install.packages("ggplot2")
+#install.packages("forecast")
 #load library
 #library(readr)
 #library(tidyr)
 #library(dplyr)
 setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/IA1")
 library(tidyverse)
+library(forecast)
 Credit<-read.csv("credit_dataonly.csv")
 #basic
 ggplot(Credit, aes(x=AGE, y=NPV)) + geom_point()
 #to make our lives a little easier lets define which variables should be factors
-NPV <- as.numeric(NPV)
 Credit$GENDER<-factor(Credit$GENDER)
 Credit$CHK_ACCT<-factor(Credit$CHK_ACCT)
 Credit$SAV_ACCT<-factor(Credit$SAV_ACCT)
