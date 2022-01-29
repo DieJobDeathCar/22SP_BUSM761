@@ -1,0 +1,32 @@
+
+Call:
+lm(formula = FARE ~ COUPON + NEW + HI + S_INCOME + E_INCOME + 
+    S_POP + E_POP + DISTANCE + PAX + GATEdummy + SLOTdummy, data = Train)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-105.997  -25.141    0.126   25.874  104.663 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.587e+02  3.328e+01  -4.768 2.55e-06 ***
+COUPON       1.335e+01  1.558e+01   0.857 0.391971    
+NEW1        -1.007e+01  1.355e+01  -0.743 0.457828    
+NEW2        -3.083e+01  2.434e+01  -1.267 0.205917    
+NEW3        -6.789e+00  8.512e+00  -0.798 0.425521    
+HI           1.205e-02  1.289e-03   9.353  < 2e-16 ***
+S_INCOME     3.643e-03  6.271e-04   5.809 1.22e-08 ***
+E_INCOME     2.990e-03  4.883e-04   6.122 2.07e-09 ***
+S_POP        6.497e-06  8.568e-07   7.583 2.08e-13 ***
+E_POP        7.466e-06  9.233e-07   8.086 6.23e-15 ***
+DISTANCE     7.706e-02  4.537e-03  16.986  < 2e-16 ***
+PAX         -1.318e-03  1.864e-04  -7.072 6.16e-12 ***
+GATEdummy1  -2.925e+01  5.161e+00  -5.668 2.65e-08 ***
+SLOTdummy1  -1.752e+01  5.004e+00  -3.501 0.000512 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 39.12 on 433 degrees of freedom
+Multiple R-squared:  0.7576,	Adjusted R-squared:  0.7503 
+F-statistic: 104.1 on 13 and 433 DF,  p-value: < 2.2e-16
+

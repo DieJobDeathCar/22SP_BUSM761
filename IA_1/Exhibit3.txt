@@ -1,0 +1,33 @@
+
+Call:
+lm(formula = FARE ~ . - COUPON - SWVACATION, data = Train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-88.162 -22.459  -1.286  21.693 100.331 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.415e+01  2.541e+01  -0.557 0.577924    
+ObsNum       1.469e-02  9.859e-03   1.490 0.136998    
+NEW1        -1.380e+01  1.212e+01  -1.138 0.255751    
+NEW2        -7.902e+00  2.173e+01  -0.364 0.716240    
+NEW3        -7.929e+00  7.577e+00  -1.047 0.295901    
+VACATION1   -3.071e+01  4.481e+00  -6.854 2.50e-11 ***
+SW1         -4.037e+01  4.446e+00  -9.080  < 2e-16 ***
+HI           9.422e-03  1.123e-03   8.393 6.87e-16 ***
+S_INCOME     1.429e-03  5.899e-04   2.422 0.015855 *  
+E_INCOME     1.734e-03  4.610e-04   3.762 0.000192 ***
+S_POP        4.863e-06  7.940e-07   6.124 2.05e-09 ***
+E_POP        4.848e-06  9.240e-07   5.246 2.44e-07 ***
+DISTANCE     7.533e-02  2.927e-03  25.732  < 2e-16 ***
+PAX         -1.005e-03  1.578e-04  -6.370 4.86e-10 ***
+SLOTdummy1  -1.259e+01  4.466e+00  -2.819 0.005046 ** 
+GATEdummy1  -2.236e+01  4.707e+00  -4.750 2.77e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 34.7 on 431 degrees of freedom
+Multiple R-squared:  0.8101,	Adjusted R-squared:  0.8035 
+F-statistic: 122.6 on 15 and 431 DF,  p-value: < 2.2e-16
+

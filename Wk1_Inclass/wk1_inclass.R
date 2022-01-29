@@ -8,7 +8,7 @@
 #library(readr)
 #library(tidyr)
 #library(dplyr)
-setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/IA1")
+setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/Wk1_Inclass")
 library(tidyverse)
 library(forecast)
 Credit<-read.csv("credit_dataonly.csv")
