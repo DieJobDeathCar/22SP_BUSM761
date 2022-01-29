@@ -1,4 +1,5 @@
 #setwd("directory")
+setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761")
 sessionInfo()
 rm(list=ls())
 #install.packages("swirl",repos = "http://cran.us.r-project.org")
