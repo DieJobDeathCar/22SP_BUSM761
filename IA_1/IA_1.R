@@ -23,6 +23,7 @@ Airlinedata <- Airlinedata %>%
   select(-SLOT,-GATE,-S_CODE,-S_CITY,-E_CODE,-E_CITY)
 
 #make life easier
+#Factor = categorical data
 #Airlinedata$ObsNum<-factor(Airlinedata$ObsNum)
 #Airlinedata$S_CODE<-factor(Airlinedata$S_CODE)
 #Airlinedata$S_CITY<-factor(Airlinedata$S_CITY)
@@ -56,8 +57,8 @@ Validation <- Airlinedata %>%
 
 
 
-lm1 <- lm(FARE ~ COUPON +NEW + HI + S_INCOME + E_INCOME + S_POP + E_POP + DISTANCE + PAX + GATEdummy + SLOTdummy, data=Train)
-#sink("lm1_Output.txt")
+lm1 <- lm(FARE ~ COUPON + NEW + HI + S_INCOME + E_INCOME + S_POP + E_POP + SW + DISTANCE + PAX + VACATION + GATEdummy + SLOTdummy, data=Train)
+#sink("Exhibit2.txt")
 #summary(lm1)
 #sink()
 summary(lm1)
