@@ -4,7 +4,7 @@
 #install.packages("tidyverse")
 #install.packages("ggplot2")
 #install.packages("forecast")
-#install.packages("pacman")
+install.packages("pacman")
 #load library
 #library(readr)
 #library(tidyr)
@@ -67,8 +67,8 @@ predVal <- predict(lr1, type="response",newdata = Validation)
 #on our selected cut-off and the actual outcomes
 confusionMatrix(as.factor(ifelse(predTrain > 0.5, 1, 0)), as.factor(Train$IsProfitable), positive="1")
 
-confusionMatrix(as.factor(ifelse(predVal > 0.5, 1, 0)), as.factor(Validation$IsProfitable), positive="1")
-```
+confusionMatrix(as.factor(ifelse(predVal > 0.23, 1, 0)), as.factor(Validation$IsProfitable), positive="1")
+
 
 
 If you want to create the analysis in Excel, here is the code to export the results:
