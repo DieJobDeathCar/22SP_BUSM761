@@ -1,10 +1,11 @@
+rm(list=ls())
 #install.package("readr")
 #install.package("tidyr")
 #install.package("dplyr")
 #install.packages("tidyverse")
 #install.packages("ggplot2")
 #install.packages("forecast")
-install.packages("pacman")
+#install.packages("pacman")
 #load library
 #library(readr)
 #library(tidyr)
@@ -21,7 +22,6 @@ Credit <- read_csv("credit_dataonly.csv")
 
 #Let's take care of the necessary data manipulations
 ```{r}
-
 #ensure R reads the categorical variables as categorical
 Credit$GENDER<-factor(Credit$GENDER)
 Credit$CHK_ACCT<-factor(Credit$CHK_ACCT)
@@ -49,10 +49,13 @@ Validation <- Credit %>% anti_join(Train, by="OBS")
 ```
 
 
-Our goal is to classify the customers as profitable or not using logistic regression:
+#Our goal is to classify the customers as profitable or not using logistic regression:
+#UPDATED: included changes from in class activity 020322
 ```{r}
-lr1 <- glm(IsProfitable ~ .-OBS - CREDIT_EXTENDED -NPV, data=Train, family="binomial")
-summary(lr1)
+lr1 <- glm(IsProfitable ~ .-OBS, data=Train, family="binomial")
+#summary(lr1)
+step.lr1 <- step(lr1,direction="forward",trace=0)
+#summary(step.lr1)
 ```
 
 
@@ -69,22 +72,39 @@ confusionMatrix(as.factor(ifelse(predTrain > 0.5, 1, 0)), as.factor(Train$IsProf
 
 confusionMatrix(as.factor(ifelse(predVal > 0.23, 1, 0)), as.factor(Validation$IsProfitable), positive="1")
 
+#Define the misclassification costs based on console output from confusion matrix
+#1 and 2 are just example numbers
+cost.fp = 2 
+cost.fn = 1
 
+# create empty error measure tables
+MyCost = c()
 
-If you want to create the analysis in Excel, here is the code to export the results:
-```{r}
+# compute cost per cutoff
+for (cut in seq(0,1,0.01)){
+  #finding the confusion matrix for each cutoff
+  cm <- confusionMatrix(as.factor(1 * (predprob > cut)), as.factor(Validation$IsProfitable), positive = "1")
+  #calculate the misclassification cost
+  FP = cm$table[2,1]
+  FN = cm$table[1,2]
+  MyCost = c(MyCost, FP*cost.fp+FN*cost.fn)
+}
+
+#plot the misclassification costs
+#plot(seq(0,1,0.01), MyCost, xlab = "CutOff", ylab = "Misclassification Costs",type = "l")
+
+#If you want to create the analysis in Excel, here is the code to export the results:
 #add the predictions to the training and testing sets 
-Train<-data.frame(Train, "Predicted" = predTrain)
-Validation<-data.frame(Validation, "Predicted" = predVal)
+#Train<-data.frame(Train, "Predicted" = predTrain)
+#Validation<-data.frame(Validation, "Predicted" = predVal)
 
 #add an indicator of whether the data was in the Training or Validation
-Train <- Train %>% mutate(MySample="T")
-Validation <- Validation %>% mutate(MySample="V") 
+#Train <- Train %>% mutate(MySample="T")
+#Validation <- Validation %>% mutate(MySample="V") 
   
 #combine the training and testing
-Credit<-rbind(Train,Validation)
+#Credit<-rbind(Train,Validation)
 
 #write the results to a flat file 
 write.csv(Credit,"LRactivityOutput.csv", row.names = FALSE)
 ```
-
