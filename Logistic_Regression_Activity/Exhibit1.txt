@@ -1,0 +1,53 @@
+
+Call:
+glm(formula = IsProfitable ~ AGE + CHK_ACCT + SAV_ACCT + DURATION + 
+    HISTORY + PRESENT_RESIDENT + EMPLOYMENT + INSTALL_RATE + 
+    FOREIGN + TYPE + AMOUNT_REQUESTED, family = "binomial", data = Train)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.6690  -0.6734   0.3868   0.6841   2.3035  
+
+Coefficients:
+                    Estimate Std. Error z value Pr(>|z|)    
+(Intercept)        0.5089083  0.9418233   0.540 0.588960    
+AGE                0.0207787  0.0105991   1.960 0.049948 *  
+CHK_ACCT1          0.4761639  0.2620483   1.817 0.069204 .  
+CHK_ACCT2          1.4465879  0.4703578   3.076 0.002101 ** 
+CHK_ACCT3          1.7293397  0.2706403   6.390 1.66e-10 ***
+SAV_ACCT1          0.1127803  0.3448621   0.327 0.743645    
+SAV_ACCT2          0.2099859  0.4291978   0.489 0.624663    
+SAV_ACCT3          0.8629496  0.6571264   1.313 0.189110    
+SAV_ACCT4          1.2079077  0.3262109   3.703 0.000213 ***
+DURATION          -0.0223523  0.0113317  -1.973 0.048548 *  
+HISTORY1          -0.2811914  0.6636216  -0.424 0.671768    
+HISTORY2           0.9821465  0.4938164   1.989 0.046713 *  
+HISTORY3           1.1246160  0.5601207   2.008 0.044663 *  
+HISTORY4           1.6764971  0.5255490   3.190 0.001423 ** 
+PRESENT_RESIDENT2 -0.9328771  0.3515288  -2.654 0.007960 ** 
+PRESENT_RESIDENT3 -0.5783332  0.3970859  -1.456 0.145270    
+PRESENT_RESIDENT4 -0.7102029  0.3391486  -2.094 0.036253 *  
+EMPLOYMENT1        0.0650041  0.4797494   0.135 0.892220    
+EMPLOYMENT2        0.8388617  0.4539410   1.848 0.064609 .  
+EMPLOYMENT3        1.4168525  0.5084372   2.787 0.005325 ** 
+EMPLOYMENT4        0.8403604  0.4740443   1.773 0.076271 .  
+INSTALL_RATE      -0.4304036  0.1050597  -4.097 4.19e-05 ***
+FOREIGN            1.6148064  0.7539062   2.142 0.032200 *  
+TYPE1             -1.0575195  0.4680462  -2.259 0.023856 *  
+TYPE2              0.6534404  0.5611048   1.165 0.244197    
+TYPE3             -0.3320349  0.4802860  -0.691 0.489360    
+TYPE4              0.1119872  0.4698171   0.238 0.811599    
+TYPE5             -1.2874742  0.5910487  -2.178 0.029385 *  
+TYPE6              0.0358191  0.5339151   0.067 0.946512    
+AMOUNT_REQUESTED  -0.0001716  0.0000508  -3.378 0.000731 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 874.58  on 699  degrees of freedom
+Residual deviance: 626.19  on 670  degrees of freedom
+AIC: 686.19
+
+Number of Fisher Scoring iterations: 5
+

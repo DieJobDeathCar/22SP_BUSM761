@@ -1,0 +1,44 @@
+
+Call:
+lm(formula = NPV ~ CHK_ACCT + SAV_ACCT + NUM_CREDITS + DURATION + 
+    HISTORY + EMPLOYMENT + OWN_RES + REAL_ESTATE + TYPE, data = Train)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-10492.9   -416.1    112.7    546.8   5143.1 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -628.709    407.913  -1.541 0.123717    
+CHK_ACCT1   -122.657    132.666  -0.925 0.355527    
+CHK_ACCT2    454.507    205.559   2.211 0.027365 *  
+CHK_ACCT3    257.525    124.926   2.061 0.039646 *  
+SAV_ACCT1    257.958    160.906   1.603 0.109367    
+SAV_ACCT2    279.868    186.176   1.503 0.133245    
+SAV_ACCT3    301.107    228.515   1.318 0.188063    
+SAV_ACCT4    559.939    131.002   4.274 2.19e-05 ***
+NUM_CREDITS -210.827     99.865  -2.111 0.035130 *  
+DURATION     -21.267      4.169  -5.101 4.40e-07 ***
+HISTORY1     221.578    324.625   0.683 0.495115    
+HISTORY2     678.882    251.026   2.704 0.007015 ** 
+HISTORY3    1058.587    277.284   3.818 0.000147 ***
+HISTORY4     900.933    255.270   3.529 0.000445 ***
+EMPLOYMENT1  -23.124    221.863  -0.104 0.917020    
+EMPLOYMENT2   83.864    209.413   0.400 0.688935    
+EMPLOYMENT3  432.449    222.435   1.944 0.052292 .  
+EMPLOYMENT4   44.033    215.653   0.204 0.838272    
+OWN_RES      211.150    106.835   1.976 0.048515 *  
+REAL_ESTATE  197.995    108.611   1.823 0.068749 .  
+TYPE1       -236.124    224.746  -1.051 0.293807    
+TYPE2        236.621    252.130   0.938 0.348330    
+TYPE3        -64.021    231.488  -0.277 0.782201    
+TYPE4         74.654    221.093   0.338 0.735727    
+TYPE5       -187.365    288.231  -0.650 0.515882    
+TYPE6       -527.014    249.652  -2.111 0.035141 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1210 on 674 degrees of freedom
+Multiple R-squared:  0.2011,	Adjusted R-squared:  0.1715 
+F-statistic: 6.787 on 25 and 674 DF,  p-value: < 2.2e-16
+

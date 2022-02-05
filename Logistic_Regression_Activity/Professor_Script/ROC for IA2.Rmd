@@ -1,0 +1,116 @@
+---
+title: "Creating a ROC curve"
+---
+
+In this script we will utilize the ROCR package to create an ROC curve. Alternatively you can use the pROC package as laid out in Figure 5.5 and the corresponding code in the book.
+
+We will also calculate misclassification costs.
+
+Finally we demonstrate how to get the same results but using a more manual approach.
+
+Load libraries and upload data:
+```{r}
+#libraries and data
+library(tidyverse)
+library(ROCR)
+Beer <- read_csv("beer.csv", show_col_types = FALSE)
+
+#In order to be able to run the Logistic Regression model, we need to translate the preference into a binary variable, we will code the Preference as Light =1 and Regular = 0.
+Beer<-Beer %>% mutate(Preference=as.factor(ifelse(Preference=="Light",1,0)))
+
+#Add a counter so we can recycle our splitting code
+Beer<-Beer %>% mutate(ObsNum=seq(1:100))
+
+#split up the data
+Train <- Beer %>% sample_frac(0.7) 
+Validation <- Beer %>% anti_join(Train, by="ObsNum")
+
+#Now we will run our logistic regression model, and create the predictions:
+lr1 <- glm(Preference ~ . -ObsNum, family = "binomial", data = Train)
+summary(lr1)
+Trainpredprob <- predict(lr1, type="response")
+Validationpredprob <- predict(lr1, type="response",newdata=Validation)
+
+#We are now ready to explore the ROC curve
+
+#First we demonstrate if we simply want to plot the ROC for one sample
+#step 1 is to create a "prediction object" that keep the predictions and outcomes
+Trainpred<-prediction(Trainpredprob,Train$Preference)
+
+#step 2 we plot:
+plot(performance(Trainpred,"tpr","fpr"))
+abline(0,1)
+
+#to get both lines on the same plot with the ROCR package we need to play a little trick
+#Step0: gather predictions and lables into lists
+AllPredictions=list(Trainpredprob,Validationpredprob)
+AllLabels=list(Train$Preference,Validation$Preference)
+
+#step 1 is to create a "prediction object" that keep the predictions and outcomes
+Allpred<-prediction(AllPredictions,AllLabels)
+
+#step 2 we plot:
+
+plot(performance(Allpred,"tpr","fpr"))
+abline(0,1)
+
+```
+
+We can use the ROCR package to get misclassification costs as well
+```{r}
+#misclassification costs for the training data (you may want to expand the code to the validaiton data!)
+cost.perf = performance(Trainpred, "cost", cost.fp = 2, cost.fn = 1)
+plot(cost.perf)
+#find the point that minimizes the misclassification cost
+Trainpred@cutoffs[[1]][which.min(cost.perf@y.values[[1]])]
+```
+
+
+Or we can do this on our own!
+Again the code demonstrates how to do this for the training data
+
+```{r}
+# create empty error measure tables
+senT = c()
+speT = c()
+
+# compute accuracy per cutoff
+for (cut in seq(0,1,0.01)){
+  #finding the confusion matrix for each cutoff
+  cm <- confusionMatrix(as.factor(1 * (Trainpredprob > cut)), as.factor(Train$Preference),   positive = "1")
+  #record the error measures
+  senT = c(senT, cm$byClass[1])
+  speT = c(speT, cm$byClass[2])
+}
+
+#plot the ROC
+plot(1-speT,senT, xlab = "1-Specificity", ylab = "Sensitivity", type = "l", ylim = c(0, 1))
+
+
+```
+
+Or to get a misclassification costs!
+
+```{r}
+#Define the misclassification costs
+cost.fp = 2 
+cost.fn = 1
+
+# create empty error measure tables
+MyCost = c()
+
+# compute cost per cutoff
+for (cut in seq(0,1,0.01)){
+  #finding the confusion matrix for each cutoff
+  cm <- confusionMatrix(as.factor(1 * (Trainpredprob > cut)), as.factor(Train$Preference),positive = "1")
+  #calculate the 
+  FP = cm$table[2,1]
+  FN = cm$table[1,2]
+  MyCost = c(MyCost, FP*cost.fp+FN*cost.fn)
+}
+
+#plot the misclassification costs
+plot(seq(0,1,0.01), MyCost, xlab = "CutOff", ylab = "Misclassification Costs",type = "l")
+
+
+```
