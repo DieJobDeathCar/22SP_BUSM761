@@ -197,8 +197,10 @@ NPVpredVal <- predict(lr1NPV, type="response",newdata = Validation)
 NPVcutoff_range = c(seq(1500,from=-1500,by=50))
 NPVpredTrain_accuracyLIST=c()
 NPVpredTrain_cutoffLIST=c()
+NPVpredTrain_sensitivityLIST=c()
 NPVpredVal_accuracyLIST=c()
 NPVpredVal_cutoffLIST=c()
+
 
 
 #looping NPVpredTrain in confusion matrix
@@ -206,10 +208,11 @@ for (NPVval in NPVcutoff_range){
   NPVpredTrain_cm <- confusionMatrix(as.factor(ifelse(NPVpredTrain >= NPVval, 1, 0)), as.factor(ifelse(Train$NPV>=NPVval,1,0)), positive="1")
   NPVpredTrain_accuracyLIST=c(NPVpredTrain_accuracyLIST,NPVpredTrain_cm$overall[["Accuracy"]])
   NPVpredTrain_cutoffLIST=c(NPVpredTrain_cutoffLIST,NPVval)
-
+  NPVpredTrain_sensitivityLIST=c(NPVpredTrain_sensitivityLIST,NPVpredTrain_cm$byClass[["Sensitivity"]])
 }
+
 #combining accuracy list with cutoff list
-NPVpredTrain_TableOutput<-cbind(data.frame(NPVpredTrain_cutoffLIST),data.frame(NPVpredTrain_accuracyLIST))
+NPVpredTrain_TableOutput<-cbind(data.frame(NPVpredTrain_cutoffLIST),data.frame(NPVpredTrain_accuracyLIST),data.frame(NPVpredTrain_sensitivityLIST))
 #output into CSV table
 write.csv(NPVpredTrain_TableOutput,"NPVpredTrain_CM_Table.csv", row.names = FALSE)
 
