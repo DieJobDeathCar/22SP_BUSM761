@@ -1,0 +1,111 @@
+---
+title: "IA3 The Data Cleaning Steps"
+---
+Start fresh as always
+```{r}
+rm(list=ls())
+setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/IA_3")
+```
+
+We start as we always do, upload packages and read in the data
+```{r}
+library(tidyverse)
+library(forecast)
+library(pacman)
+p_load(tidyverse,caret,FNN,fastDummies,rpart,rpart.plot)
+Credit <- read_csv("credit_dataonly.csv")
+```
+Let's take care of the necessary data manipulations
+```{r}
+#drop credit extended
+Credit <- Credit %>% select (-CREDIT_EXTENDED)
+
+#create the dependent variable
+Credit <- Credit %>% mutate (IsProfitable=ifelse(NPV>0,1,0))
+Credit_no_dummy <- Credit
+#create dummies and remove the originals
+Credit <- dummy_cols(Credit, select_columns = c('GENDER','CHK_ACCT','SAV_ACCT','HISTORY','PRESENT_RESIDENT','EMPLOYMENT','JOB','TYPE'), remove_selected_columns = TRUE)
+#summary(Credit)
+```
+Checking Credit
+```{r}
+summary(Credit)
+head(Credit)
+colnames(Credit)
+```
+
+Splitting dataset
+```{r}
+Train <- Credit %>% sample_frac(0.7) 
+Validation <- Credit %>% anti_join(Train, by="OBS") 
+Train.norm <- Train
+Validation.norm <- Validation
+```
+Normalize data
+```{r}
+norm_train.values <- preProcess(Train[,2:12],method=c("center","scale"))
+Train.norm[,2:12] <- predict(norm_train.values,Train[,2:12])
+#norm_val.values <- preProcess(Validation[,2:12],method=c("center","scale"))
+Validation.norm[,2:12] <- predict(norm_train.values,Validation[,2:12])
+```
+KNN loop to find best k on training data
+```{r}
+#creating a data frame table to keep track of K and accuracy
+accuracy.df <- data.frame(k=seq(1,35,1),accuracy=rep(0,35))
+#creating loop
+for(i in 1:35) {
+knn_train.pred <- knn(train = Train.norm[,2:12],test = Validation.norm[,2:12],cl = Train.norm$IsProfitable,k= i)
+accuracy.df[i,2] <- confusionMatrix(knn_train.pred,as.factor(Validation.norm$IsProfitable))$overall[1]
+}
+#plot the results
+plot(accuracy.df,type="b")
+#finding k that gives max accuracy
+MaxK_index = which(accuracy.df$accuracy==max(accuracy.df$accuracy))
+MaxK_index
+MaxK_accuracy = max(accuracy.df$accuracy)
+MaxK_accuracy
+#write to csv
+write_csv(accuracy.df,"knn_accuracy_loop_output.csv")
+```
+#use the best k ontained on validation data
+```{r}
+knn_train_maxk.pred <- knn(train = Train.norm[,2:12],test = Validation.norm[,2:12],cl = Train.norm$IsProfitable,k= MaxK_index[1])
+cm_train_maxk<- confusionMatrix(knn_train_maxk.pred,as.factor(Validation$IsProfitable),positive = "1")
+#sink("cm_train_maxk_output.txt")
+cm_train_maxk
+#sink()
+```
+
+start Classification Tree
+```{r}
+Train_no_dummy <- Credit_no_dummy %>% sample_frac(0.7)
+Validation_no_dummy <- Credit_no_dummy %>% anti_join(Train_no_dummy, by="OBS")
+Train_no_dummy <- Credit_no_dummy %>% select(-OBS, -NPV)
+Validation_no_dummy <- Validation_no_dummy %>% select(-OBS, -NPV)
+
+tree = rpart(IsProfitable ~., data=Train_no_dummy,method="class",cp=0.01)
+rpart.plot(tree)
+printcp(tree)
+```
+min error tree
+```{r}
+minerrorCP<-tree$cptable[which.min(tree$cptable[,"xerror"]),"CP"]
+prunedtree<-prune(tree,cp=minerrorCP)
+rpart.plot(prunedtree, type=5)
+printcp(prunedtree)
+pred_prunedtree <- predict(prunedtree)
+pred_prunedtree=pred_prunedtree[,1]
+confusionMatrix(as.factor(ifelse(pred_prunedtree>0.5,1,0)),as.factor(Train_no_dummy$IsProfitable),positive="1")
+```
+build tree for validation set
+```{r}
+tree_v = rpart(IsProfitable ~., data=Validation_no_dummy,method="class")
+minerrorCP_v<-tree_v$cptable[which.min(tree_v$cptable[,"xerror"]),"CP"]
+prunedtree_v<-prune(tree_v,cp=minerrorCP_v)
+printcp(prunedtree_v)
+rpart.plot(prunedtree_v, type=5)
+pred_prunedtree_v <- predict(prunedtree_v,newdata = Validation_no_dummy)
+pred_prunedtree_v = pred_prunedtree_v[,1]
+confusionMatrix(as.factor(ifelse(pred_prunedtree_v>0.5,1,0)),as.factor(Validation_no_dummy$IsProfitable),positive="1")
+```
+
