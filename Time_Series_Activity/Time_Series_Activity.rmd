@@ -1,0 +1,70 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/Time_Series_Activity")
+#install.packages("tidyverse")
+#install.packages("fpp2")
+library("tidyverse")
+library("fpp2")
+MyData <- read_csv("DCbikeshare.csv")
+```
+
+
+```{r}
+MyData <-MyData %>% mutate(Date=as.Date(Date,"%m/%d/%Y"))
+
+#Step 1. Our data starts On Sept 15th, we need to figure out which day of the year that is!
+DayOfTheYear=as.numeric(format(MyData$Date[1], "%j"))
+
+#step 2. Create the time series object
+rides.ts <- ts(MyData["Quantity"], start = c(2010, DayOfTheYear), frequency = 365.25)
+
+#use autoplot for time series
+autoplot(rides.ts,ylab="Quantity")
+
+#cool stuff
+autoplot(decompose(rides.ts))
+
+#fit an exponential smoothing model
+ses.rides <- ets(rides.ts, model="ANN", alpha = 0.3, beta = 0.1, gamma = 0.2)
+
+#plot the results
+plot(rides.ts, ylab = "Quantity", xlab = "Time", bty = "l", 
+     xaxt = "n", xlim = c(2010,2016), main = "Simple Exponential Smoothing")
+axis(1, at = seq(2010, 2016, 1), labels = format(seq(2010, 2016, 1)))
+lines(ses.rides$fitted, lwd = 2, col = "blue", lty = 2)
+
+#quick plot
+autoplot(ses.rides)
+
+#performance
+accuracy(ses.rides$fitted,rides.ts)
+```
+
+```{r}
+#Now lets do regression
+
+reg.data<-data.frame(Quantity=MyData$Quantity, 
+                     Date=MyData$Date, 
+                     Trend=seq(1,1842,1),
+                     DayOfTheWeek=weekdays(MyData$Date),
+                     Month=months(MyData$Date),
+                     Year=format(as.Date(MyData$Date, format="%y-%m-%d"),"%Y"),
+                     logQ=log(MyData$Quantity))
+
+#what does the data look like?
+
+#run a regression model
+reg.model<-glm(Quantity~.-Date -logQ,data=reg.data)
+reg.model.step <- step(reg.model, direction = "backward")
+#get the predictions
+reg.pred<-predict(reg.model.step)
+
+#get performance measures
+accuracy(reg.pred,MyData$Quantity)
+
+#how would you plot the results?
+```
+
