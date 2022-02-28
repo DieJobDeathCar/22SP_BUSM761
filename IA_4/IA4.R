@@ -41,7 +41,7 @@ valid.ts <- window(sales.ts, start = c(2016, nTrain + 1),
 
 
 #fit an emultiplicative HW model
-ses.train <- ets(train.ts, model="MMM", alpha = 0.16, beta = 0.16, gamma = 0.01)
+ses.train <- ets(train.ts, model="MAM", alpha = 0.2, beta = 0.15, gamma = 0.05)
 ses.train.pred <- forecast(ses.train, h = nValid, level = 0)
 ses.valid.pred <- forecast(ses.train, h = nValid, level = 0, newdata = valid.ts)
 #plot the results

@@ -1,0 +1,52 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+rm(list=ls())
+#install.package("readr")
+#install.package("tidyr")
+#install.package("dplyr")
+#install.packages("tidyverse")
+#install.packages("ggplot2")
+#install.packages("forecast")
+#install.packages("pacman")
+#install.packages("pkr")
+#load library
+#library(readr)
+#library(tidyr)
+#library(dplyr)
+setwd("H:/My Drive/BUSM761_DataMining/22SP_BUSM761/Machine Learning Bias Activity")
+library(tidyverse)
+library(forecast)
+library(pacman)
+p_load(tidyverse,caret,ROCR)
+Credit <- read_csv("credit_dataonly.csv")
+```
+
+```{r}
+#making regression
+Credit <- Credit %>% mutate (IsProfitable=ifelse(NPV>0,1,0))
+Train <- Credit %>% sample_frac(0.7) 
+Validation <- Credit %>% anti_join(Train, by="OBS") 
+lm1 <- lm(NPV ~ .-OBS - CREDIT_EXTENDED, data=Train)
+```
+
+```{r}
+#Get the predictions 
+Pred=predict(lm1, type="response", newdata=Validation)
+
+#for easier manipulation, lets add the predictions as a column to the validation data
+Validation <- cbind(Validation,Pred)
+
+#now summarize the accuracy by Gender
+MyMiniDashboard<-Validation %>% group_by(RENT) %>% summarize(
+  #Accuracy
+  accuracy =sum(ifelse(Pred>0.5,1,0)==IsProfitable)/n()
+)
+
+#print to screen
+MyMiniDashboard 
+```
+
