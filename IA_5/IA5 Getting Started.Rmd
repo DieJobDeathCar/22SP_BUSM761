@@ -1,0 +1,127 @@
+---
+title: "Individual Assignment 5"
+---
+
+
+Load packages and data; we will be using the vegan library to calculate similarity measures
+```{r}
+
+library(pacman)
+p_load(tidyverse,arules)
+
+#read in the patient data
+Members <- read_csv("members.csv")
+#read in the diagnosis descriptions
+DiagDesc <- read_csv("DiagDictionary.csv")
+
+```
+
+Task 1: summarizing diagnosis (Feel free to complete this task in Excel if you prefer)
+```{r}
+#Let's work with just the diagnosis data
+DiagData<-Members[,5:51]
+
+#get the corresponding description
+DiagDesc<-DiagDesc[5:51,3]
+
+#now summarize the data
+DiagCounts = apply(DiagData,2,sum)
+
+```
+
+
+
+TASK 2 - Optional Data Reduction Step: Reduce the data while testing the code and getting to know how much data your machine can handle. 
+TASK 2 - Using threshold to filter member count
+```{r}
+#Let's work with just the diagnosis data
+DiagData<-Members[,5:51]
+
+#set this number to some low number depending on how powerful your computer is
+MinDiag=3
+
+#count the diagnosis for each member
+DiagData <- DiagData %>% rowwise %>% mutate(DiagCount=sum(across(where(is.numeric))))
+
+#filter the dataset
+DiagData <- DiagData %>% filter(DiagCount>=MinDiag)
+
+#drop the DiagCount
+DiagData <-DiagData %>% select(-DiagCount)
+```
+
+
+
+Task 2: Run the algorithm on the data created
+
+Lets start with transforming the data
+```{r}
+#Removing Diag_DD0046
+DiagData<-DiagData %>% select(-Diag_DD0046)
+DiagDataDF <- DiagData
+# convert the binary incidence matrix into a transactions database
+DiagData<-as.matrix(DiagData)
+fp.trans <- as(DiagData, "transactions")
+
+#use inspect to verify that the data looks as expected
+#inspect(fp.trans)
+
+```
+Task 3: run rules on customized supp and conf levels
+```{r}
+rules <- apriori(fp.trans, parameter = list(supp = 0.01, conf = 0.1, target = "rules"))
+inspect(head(sort(rules, by = "lift"), n = 3))
+```
+
+OPTIONAL: loop to find highest lift
+```{r}
+for( i in seq(0.01,1,0.05)){
+  for (ii in seq(0.01,1,0.05)) {
+    loop.rules <- apriori(fp.trans, parameter = list(supp = i, conf = ii, target = "rules"))
+    loop.list<- c(i,ii,rules@quality[4])
+  }
+}
+loop.list
+```
+
+Save your rules to a file
+
+```{r}
+#rules is the output of the association rule algorithm
+write(rules, file = "association_rules.csv", sep = ",", quote = TRUE, row.names = FALSE)
+rule_data <- DATAFRAME(rules, separate = TRUE, setStart = '', itemSep = ',', setEnd = '')
+write.csv(rule_data,"MyRules.csv")
+```
+
+question 8
+```{r}
+Members<-Members %>%
+  mutate(TA2 = Members['MedPaidAmount'] + Members['RxPaidAmount'], HighCost = ifelse(TA2>=30000,1,0))
+
+DiagData.HC<-cbind(Members[,5:51],Members[,242])
+
+MinDiag=3
+
+DiagData.HC <- DiagData.HC %>% rowwise %>% mutate(DiagCount=sum(across(where(is.numeric))))
+
+DiagData.HC<- DiagData.HC %>% filter(DiagCount>=MinDiag)
+
+DiagData.HC <-DiagData.HC %>% select(-DiagCount)
+
+DiagData.HC<-DiagData.HC %>% select(-Diag_DD0046)
+
+DiagData.HC<-as.matrix(DiagData.HC)
+fp.trans.HC <- as(DiagData.HC, "transactions")
+
+```
+question 8 - run rules & output
+```{r}
+rules.HC <- apriori(fp.trans.HC, parameter = list(supp = 0.001, conf = 0.1, target = "rules"),appearance = list(rhs = "HighCost"))
+inspect(head(sort(rules.HC, by = "lift"), n = 5))
+
+write(rules.HC, file = "association_rules_HC.csv", sep = ",", quote = TRUE, row.names = FALSE)
+rule_data.HC <- DATAFRAME(rules.HC, separate = TRUE, setStart = '', itemSep = ',', setEnd = '')
+write.csv(rule_data.HC,"MyRules_HC.csv")
+```
+
+
